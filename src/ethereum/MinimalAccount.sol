@@ -37,7 +37,8 @@ import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPo
 /**
  * @title MinimalAccount
  * @author Kelechi Kizito Ugwu
- * @notice
+ * @notice This contract implements a minimal account that can execute transactions and validate user operations.
+ * @dev It inherits from IAccount and Ownable, allowing the owner to execute commands and
  */
 contract MinimalAccount is IAccount, Ownable {
     ///////////////////////////////////////////
@@ -79,13 +80,18 @@ contract MinimalAccount is IAccount, Ownable {
     ///////////////////////////////////////////
     //   Receive Function                    //
     //////////////////////////////////////////
-    receive() external payable {
-        
-    }
+    receive() external payable {}
 
     ////////////////////////////
     //   External Functions   //
     ////////////////////////////
+    /**
+     * @dev This function allows the owner or EntryPoint to execute a function call on a target contract.
+     * @notice Executes a function call on the target contract.
+     * @param dest The address of the target contract.
+     * @param value The amount of Ether to send with the call.
+     * @param functionData The data to be sent with the call.
+     */
     function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPointOrOwner {
         (bool success, bytes memory result) = dest.call{value: value}(functionData);
 
@@ -115,6 +121,13 @@ contract MinimalAccount is IAccount, Ownable {
     ///////////////////////////////////////////
     //   Private & Internal View Functions   //
     //////////////////////////////////////////
+    /**
+     * @dev Validates the signature of the user operation.
+     * @param userOp The PackedUserOperation struct containing the user operation details.
+     * @param userOpHash The hash of the user operation.
+     * @return validationData The validation data indicating whether the signature is valid or not.
+     */
+    // Returns SIG_VALIDATION_SUCCESS if the signature is valid, otherwise returns SIG_VALIDATION_FAILED
     function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
         internal
         view
@@ -128,6 +141,10 @@ contract MinimalAccount is IAccount, Ownable {
         return SIG_VALIDATION_SUCCESS;
     }
 
+    /**
+     * @dev Pays the prefund amount to the EntryPoint contract if missingAccountFunds is not zero.
+     * @param missingAccountFunds The amount of funds missing from the account.
+     */
     function _payPrefund(uint256 missingAccountFunds) internal {
         if (missingAccountFunds != 0) {
             (bool success,) = payable(msg.sender).call{value: missingAccountFunds, gas: type(uint256).max}("");

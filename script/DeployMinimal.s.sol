@@ -13,12 +13,12 @@ contract DeployMinimal is Script {
 
         vm.startBroadcast(config.account); // We are using the burner/deploy wallet from config for broadcasting
         MinimalAccount minimalAccount = new MinimalAccount(config.entryPoint);
-        minimalAccount.transferOwnership(msg.sender);
+        minimalAccount.transferOwnership(config.account);
         vm.stopBroadcast();
         return (helperConfig, minimalAccount);
     }
 
-    function run() public {
+    function run() public returns (HelperConfig, MinimalAccount) {
         deployMinimalAccount();
     }
 }
