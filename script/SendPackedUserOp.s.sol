@@ -13,7 +13,10 @@ contract SendPackedUserOp is Script {
 
     // MinimalAccount minimalAccount;
 
-    function run() public {}
+    function run() public {
+        HelperConfig helperConfig = new HelperConfig();
+        address dest = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
+    }
 
     function generateSignedUserOperation(
         bytes memory callData,
