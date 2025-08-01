@@ -192,4 +192,20 @@ contract MinimalAccountTest is Test {
     function testGetEntryPoint() public {
         assertEq(minimalAccount.getEntryPoint(), helperConfig.getConfig().entryPoint);
     }
+
+    function testMinimalAccountCanRecieveEther() public {
+        // ARRANGE
+        uint256 sendValue = 1e18;
+        vm.deal(randomUser, sendValue); // Give some ether to the random user
+        uint256 initialBalance = address(minimalAccount).balance;
+
+        // ACT
+        vm.prank(randomUser);
+        (bool success,) = address(minimalAccount).call{value: sendValue}("");
+        uint256 endingBalance = address(minimalAccount).balance;
+
+        // ASSERT
+        assertEq(success, true);
+        assertEq(endingBalance, initialBalance + sendValue);
+    }
 }

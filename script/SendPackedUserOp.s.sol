@@ -6,7 +6,8 @@ import {PackedUserOperation} from "lib/account-abstraction/contracts/interfaces/
 import {HelperConfig} from "script/HelperConfig.s.sol"; // Assuming NetworkConfig is defined or imported here
 import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-// import {MinimalAccount} from "src/ethereum/MinimalAccount.sol";
+import {MinimalAccount} from "src/ethereum/MinimalAccount.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract SendPackedUserOp is Script {
     using MessageHashUtils for bytes32;
@@ -15,7 +16,21 @@ contract SendPackedUserOp is Script {
 
     function run() public {
         HelperConfig helperConfig = new HelperConfig();
-        address dest = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
+        address dest = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238; // Ethereum Sepolia Testnet Address USDC
+        uint256 value = 0;
+        bytes memory functionData =
+            abi.encodeWithSelector(IERC20.approve.selector, 0x93923B42Ff4bDF533634Ea71bF626c90286D27A0, 5e6);
+        bytes memory executeCallData =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
+        PackedUserOperation memory userOp = generateSignedUserOperation(
+            executeCallData, helperConfig.getConfig(), 0x853Ce3Ed0b8Cd49f0d8655aD9Ba858f7bF44Dc45
+        );
+        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
+        ops[0] = userOp;
+
+        vm.startBroadcast();
+        IEntryPoint(helperConfig.getConfig().entryPoint).handleOps(ops, payable(helperConfig.getConfig().account));
+        vm.stopBroadcast();
     }
 
     function generateSignedUserOperation(
