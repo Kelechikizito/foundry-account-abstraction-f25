@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Script} from "forge-std/Script.sol";
 import {PackedUserOperation} from "lib/account-abstraction/contracts/interfaces/PackedUserOperation.sol";
+// import {UserOperation} from "lib/account-abstraction/contracts/interfaces/UserOperation.sol";
 import {HelperConfig} from "script/HelperConfig.s.sol"; // Assuming NetworkConfig is defined or imported here
 import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
@@ -13,25 +14,26 @@ contract SendPackedUserOp is Script {
     using MessageHashUtils for bytes32;
 
     // MinimalAccount minimalAccount;
+    // 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
 
-    function run() public {
-        HelperConfig helperConfig = new HelperConfig();
-        address dest = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238; // Ethereum Sepolia Testnet Address USDC
-        uint256 value = 0;
-        bytes memory functionData =
-            abi.encodeWithSelector(IERC20.approve.selector, 0x93923B42Ff4bDF533634Ea71bF626c90286D27A0, 5e6);
-        bytes memory executeCallData =
-            abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
-        PackedUserOperation memory userOp = generateSignedUserOperation(
-            executeCallData, helperConfig.getConfig(), 0x853Ce3Ed0b8Cd49f0d8655aD9Ba858f7bF44Dc45
-        );
-        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
-        ops[0] = userOp;
+    // function run() public {
+    //     HelperConfig helperConfig = new HelperConfig();
+    //     address dest = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238; // Ethereum Sepolia Testnet Address USDC
+    //     uint256 value = 0;
+    //     bytes memory functionData =
+    //         abi.encodeWithSelector(IERC20.approve.selector, 0x93923B42Ff4bDF533634Ea71bF626c90286D27A0, 5e6);
+    //     bytes memory executeCallData =
+    //         abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
+    //     PackedUserOperation memory userOp = generateSignedUserOperation(
+    //         executeCallData, helperConfig.getConfig(), 0x853Ce3Ed0b8Cd49f0d8655aD9Ba858f7bF44Dc45
+    //     );
+    //     PackedUserOperation[] memory ops = new PackedUserOperation[](1);
+    //     ops[0] = userOp;
 
-        vm.startBroadcast();
-        IEntryPoint(helperConfig.getConfig().entryPoint).handleOps(ops, payable(helperConfig.getConfig().account));
-        vm.stopBroadcast();
-    }
+    //     vm.startBroadcast();
+    //     IEntryPoint(helperConfig.getConfig().entryPoint).handleOps(ops, payable(helperConfig.getConfig().account));
+    //     // vm.stopBroadcast();
+    // }
 
     function generateSignedUserOperation(
         bytes memory callData,

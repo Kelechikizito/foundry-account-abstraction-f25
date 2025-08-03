@@ -19,6 +19,6 @@ contract DeployMinimal is Script {
     }
 
     function run() public returns (HelperConfig, MinimalAccount) {
-        deployMinimalAccount();
+        return deployMinimalAccount();
     }
 }
