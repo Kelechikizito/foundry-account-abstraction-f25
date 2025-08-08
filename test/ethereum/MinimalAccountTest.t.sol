@@ -104,20 +104,6 @@ contract MinimalAccountTest is Test {
         assertEq(usdc.balanceOf(address(minimalAccount)), AMOUNT);
     }
 
-    // function testExecuteCommandsRevertsIfCallFails() public {
-    //     // ARRANGE
-    //     assertEq(usdc.balanceOf(address(minimalAccount)), 0);
-    //     // address dest = address(usdc);
-    //     uint256 value = 0;
-    //     bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
-    //     bytes memory expectedRevertData = abi.encodeWithSignature("Error(string)", "Always fails");
-
-    //     // ACT / ASSERT
-    //     vm.prank(minimalAccount.owner());
-    //     vm.expectRevert(abi.encodeWithSelector(MinimalAccount.MinimalAccount__CallFailed.selector, expectedRevertData));
-    //     minimalAccount.execute(randomUser, value, functionData); // This line did not revert, Isn't this a bug?
-    // }
-
     //////////////////////////////////////
     //// User Operation Tests          ///
     //////////////////////////////////////
